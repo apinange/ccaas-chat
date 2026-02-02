@@ -1,0 +1,151 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "refresh": "Actualizar",
+    "language": "Idioma"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "dashboard": "Panel",
+    "settings": "Configuración",
+    "profile": "Perfil",
+    "logout": "Cerrar Sesión"
+  },
+  "chat": {
+    "title": "Asistente del Agente",
+    "placeholder": "Escribe tu mensaje...",
+    "send": "Enviar",
+    "user": "U",
+    "agent": "A",
+    "typing": "El agente está escribiendo...",
+    "connected": "Conectado",
+    "disconnected": "Desconectado"
+  },
+  "user": {
+    "profile": "Perfil del Usuario",
+    "name": "Nombre",
+    "age": "Edad",
+    "gender": "Género",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "email": "Correo",
+    "customerType": "Tipo de Cliente",
+    "trustLevel": "Nivel de Confianza"
+  },
+  "biometrics": {
+    "title": "Biometría de Voz",
+    "verified": "Verificado",
+    "notVerified": "No Verificado",
+    "score": "Puntuación",
+    "confidence": "Nivel de Confianza"
+  },
+  "ai": {
+    "suggestions": "Sugerencias de IA",
+    "summary": "Resumen de la Llamada",
+    "transcription": "Transcripción",
+    "sentiment": "Análisis de Sentimiento"
+  },
+  "notes": {
+    "title": "Notas",
+    "addNote": "Agregar Nota",
+    "editNote": "Editar Nota",
+    "deleteNote": "Eliminar Nota",
+    "placeholder": "Escribe tu nota aquí..."
+  },
+  "status": {
+    "online": "En Línea",
+    "offline": "Desconectado",
+    "busy": "Ocupado",
+    "away": "Ausente"
+  },
+  "tooltips": {
+    "agentAssistant": "Asistente del Agente",
+    "userInfo": "Información del Usuario",
+    "identification": "Identificación",
+    "aiSuggestions": "Sugerencias de IA",
+    "notes": "Notas",
+    "summary": "Resumen"
+  },
+  "buttons": {
+    "enroll": "Registrar",
+    "reEnroll": "Re-registrar",
+    "optOut": "Desistir",
+    "verify": "Verificar",
+    "start": "Iniciar",
+    "stop": "Detener",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "submit": "Enviar",
+    "close": "Cerrar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "add": "Agregar",
+    "remove": "Quitar",
+    "refresh": "Actualizar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior"
+  },
+  "labels": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "warning": "Advertencia",
+    "info": "Información",
+    "status": "Estado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "connected": "Conectado",
+    "disconnected": "Desconectado"
+  },
+  "app": {
+    "title": "Asistente del Agente",
+    "description": "Plataforma de asistencia al agente con IA",
+    "welcome": "Bienvenido al Asistente del Agente",
+    "ready": "Listo para ayudar"
+  },
+  "features": {
+    "voiceBiometrics": "Biometría de Voz",
+    "transcription": "Transcripción",
+    "suggestions": "Sugerencias de IA",
+    "summary": "Resumen de la Llamada",
+    "notes": "Notas",
+    "userInfo": "Información del Usuario",
+    "identification": "Identificación",
+    "currentConversation": "Conversación Actual",
+    "liveTranscription": "Transcripción en Vivo"
+  },
+  "status": {
+    "online": "En Línea",
+    "offline": "Desconectado",
+    "busy": "Ocupado",
+    "away": "Ausente",
+    "connecting": "Conectando...",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "notEnrolled": "No Registrado",
+    "notEstimated": "No estimado"
+  },
+  "messages": {
+    "noData": "No hay datos disponibles",
+    "loadingData": "Cargando datos...",
+    "errorLoading": "Error al cargar datos",
+    "tryAgain": "Intentar de nuevo",
+    "success": "Operación exitosa",
+    "failed": "Operación falló",
+    "attention": "¡ATENCIÓN!!!"
+  }
+}

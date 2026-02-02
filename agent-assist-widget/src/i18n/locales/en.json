@@ -1,0 +1,161 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "refresh": "Refresh",
+    "language": "Language"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "chat": {
+    "title": "Agent Assistant",
+    "placeholder": "Type your message...",
+    "send": "Send",
+    "user": "U",
+    "agent": "A",
+    "typing": "Agent is typing...",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
+  },
+  "user": {
+    "profile": "User Profile",
+    "name": "Name",
+    "age": "Age",
+    "gender": "Gender",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "customerType": "Customer Type",
+    "trustLevel": "Trust Level"
+  },
+  "biometrics": {
+    "title": "Voice Biometrics",
+    "verified": "Verified",
+    "notVerified": "Not Verified",
+    "score": "Score",
+    "confidence": "Confidence Level"
+  },
+  "ai": {
+    "suggestions": "AI Suggestions",
+    "summary": "Call Summary",
+    "transcription": "Transcription",
+    "sentiment": "Sentiment Analysis"
+  },
+  "notes": {
+    "title": "Notes",
+    "addNote": "Add Note",
+    "editNote": "Edit Note",
+    "deleteNote": "Delete Note",
+    "placeholder": "Enter your note here..."
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "busy": "Busy",
+    "away": "Away"
+  },
+  "tooltips": {
+    "agentAssistant": "Agent Assistant",
+    "userInfo": "User Information",
+    "identification": "Identification",
+    "aiSuggestions": "AI Suggestions",
+    "notes": "Notes",
+    "summary": "Summary",
+    "userSentiment": "User Sentiment",
+    "riskLevel": "Risk Level"
+  },
+  "toasts": {
+    "userInfo": "USER INFO",
+    "summary": "SUMMARY",
+    "notes": "NOTES",
+    "aiSuggestion": "AI SUGGESTION",
+    "liveTranscription": "LIVE TRANSCRIPTION",
+    "identification": "IDENTIFICATION"
+  },
+  "buttons": {
+    "enroll": "Enroll",
+    "reEnroll": "Re-Enroll",
+    "optOut": "Opt Out",
+    "verify": "Verify",
+    "start": "Start",
+    "stop": "Stop",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "close": "Close",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "remove": "Remove",
+    "refresh": "Refresh",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "labels": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "connected": "Connected",
+    "disconnected": "Disconnected"
+  },
+  "app": {
+    "title": "Agent Assist",
+    "description": "AI-powered agent assistance platform",
+    "welcome": "Welcome to Agent Assist",
+    "ready": "Ready to assist"
+  },
+  "features": {
+    "voiceBiometrics": "Voice Biometrics",
+    "transcription": "Transcription",
+    "suggestions": "AI Suggestions",
+    "summary": "Call Summary",
+    "notes": "Notes",
+    "userInfo": "User Information",
+    "identification": "Identification",
+    "currentConversation": "Current Conversation",
+    "liveTranscription": "Live Transcription"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "busy": "Busy",
+    "away": "Away",
+    "connecting": "Connecting...",
+    "connected": "Connected",
+    "disconnected": "Disconnected",
+    "notEnrolled": "Not Enrolled",
+    "notEstimated": "Not estimated"
+  },
+  "messages": {
+    "noData": "No data available",
+    "loadingData": "Loading data...",
+    "errorLoading": "Error loading data",
+    "tryAgain": "Try again",
+    "success": "Operation successful",
+    "failed": "Operation failed",
+    "attention": "ATTENTION!!!"
+  }
+}

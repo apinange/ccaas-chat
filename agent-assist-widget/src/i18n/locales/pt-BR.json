@@ -1,0 +1,161 @@
+{
+  "common": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "close": "Fechar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior",
+    "submit": "Enviar",
+    "search": "Pesquisar",
+    "filter": "Filtrar",
+    "refresh": "Atualizar",
+    "language": "Idioma"
+  },
+  "navigation": {
+    "home": "Início",
+    "dashboard": "Painel",
+    "settings": "Configurações",
+    "profile": "Perfil",
+    "logout": "Sair"
+  },
+  "chat": {
+    "title": "Assistente do Agente",
+    "placeholder": "Digite sua mensagem...",
+    "send": "Enviar",
+    "user": "U",
+    "agent": "A",
+    "typing": "Agente está digitando...",
+    "connected": "Conectado",
+    "disconnected": "Desconectado"
+  },
+  "user": {
+    "profile": "Perfil do Usuário",
+    "name": "Nome",
+    "age": "Idade",
+    "gender": "Gênero",
+    "address": "Endereço",
+    "phone": "Telefone",
+    "email": "Email",
+    "customerType": "Tipo de Cliente",
+    "trustLevel": "Nível de Confiança"
+  },
+  "biometrics": {
+    "title": "Biometria de Voz",
+    "verified": "Verificado",
+    "notVerified": "Não Verificado",
+    "score": "Pontuação",
+    "confidence": "Nível de Confiança"
+  },
+  "ai": {
+    "suggestions": "Sugestões de IA",
+    "summary": "Resumo da Chamada",
+    "transcription": "Transcrição",
+    "sentiment": "Análise de Sentimento"
+  },
+  "notes": {
+    "title": "Notas",
+    "addNote": "Adicionar Nota",
+    "editNote": "Editar Nota",
+    "deleteNote": "Excluir Nota",
+    "placeholder": "Digite sua nota aqui..."
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "busy": "Ocupado",
+    "away": "Ausente"
+  },
+  "tooltips": {
+    "agentAssistant": "Assistente do Agente",
+    "userInfo": "Infos Gerais",
+    "identification": "Identificação",
+    "aiSuggestions": "Sugestões de IA",
+    "notes": "Notas",
+    "summary": "Resumo",
+    "userSentiment": "Sentimento do Usuário",
+    "riskLevel": "Nível de Risco"
+  },
+  "toasts": {
+    "userInfo": "INFOS GERAIS",
+    "summary": "RESUMO",
+    "notes": "NOTAS",
+    "aiSuggestion": "SUGESTÃO",
+    "liveTranscription": "TRANSCRIÇÃO AO VIVO",
+    "identification": "IDENTIFICAÇÃO"
+  },
+  "buttons": {
+    "enroll": "Cadastrar",
+    "reEnroll": "Re-cadastrar",
+    "optOut": "Desistir",
+    "verify": "Verificar",
+    "start": "Iniciar",
+    "stop": "Parar",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "submit": "Enviar",
+    "close": "Fechar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "refresh": "Atualizar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "previous": "Anterior"
+  },
+  "labels": {
+    "loading": "Carregando...",
+    "error": "Erro",
+    "success": "Sucesso",
+    "warning": "Aviso",
+    "info": "Informação",
+    "status": "Status",
+    "active": "Ativo",
+    "inactive": "Inativo",
+    "connected": "Conectado",
+    "disconnected": "Desconectado"
+  },
+  "app": {
+    "title": "Assistente do Agente",
+    "description": "Plataforma de assistência ao agente com IA",
+    "welcome": "Bem-vindo ao Assistente do Agente",
+    "ready": "Pronto para ajudar"
+  },
+  "features": {
+    "voiceBiometrics": "Biometria de Voz",
+    "transcription": "Transcrição",
+    "suggestions": "Sugestões de IA",
+    "summary": "Resumo da Chamada",
+    "notes": "Notas",
+    "userInfo": "Infos Gerais",
+    "identification": "Identificação",
+    "currentConversation": "Conversa Atual",
+    "liveTranscription": "Transcrição ao Vivo"
+  },
+  "status": {
+    "online": "Online",
+    "offline": "Offline",
+    "busy": "Ocupado",
+    "away": "Ausente",
+    "connecting": "Conectando...",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "notEnrolled": "Não Cadastrado",
+    "notEstimated": "Não estimado"
+  },
+  "messages": {
+    "noData": "Nenhum dado disponível",
+    "loadingData": "Carregando dados...",
+    "errorLoading": "Erro ao carregar dados",
+    "tryAgain": "Tentar novamente",
+    "success": "Operação bem-sucedida",
+    "failed": "Operação falhou",
+    "attention": "ATENÇÃO!!!"
+  }
+}
