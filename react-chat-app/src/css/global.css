@@ -1,0 +1,26 @@
+/* Webkit browsers (Chrome, Safari, Edge) */
+.scrollbar::-webkit-scrollbar {
+    width: 10px;
+    background-color: transparent;
+  }
+  
+  .scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+  }
+  
+  .scrollbar:hover::-webkit-scrollbar-thumb {
+    border-radius: 20px;
+    background-color: #6c6b6b;
+  }
+  
+  /* Firefox */
+  .scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  
+  .scrollbar:hover {
+    scrollbar-color: #6c6b6b transparent;
+  }
