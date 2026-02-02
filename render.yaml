@@ -1,0 +1,24 @@
+# Deploy do backend CCAAS (chat-server) no Render — sem tunnel
+# Repo: usar este projeto (whats-ccaas / ccaas-chat) no Render
+services:
+  - type: web
+    name: ccaas-chat-server
+    env: node
+    plan: free
+    rootDir: chat-server
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: BRIDGE_URL
+        sync: false  # URL do whatsapp-integration no Render
+      - key: DEFAULT_PHONE_NUMBER
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false  # Opcional - Agent Assist
+      - key: OPENAI_API_URL
+        value: https://api.openai.com/v1/chat/completions
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
