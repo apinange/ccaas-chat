@@ -1,16 +1,23 @@
-import express from 'express';
-import { analyzeEscalation, summarizeConversation, analyzeConversationForAgentAssist } from '../services/openaiService.js';
-import { 
-  getUserMessagesSinceLastBeforeEscalation, 
-  getMessages, 
-  hasEscalation 
-} from '../storage/messageStorage.js';
-import { 
-  getAgentAssistAnalysis, 
+import express from "express";
+import {
+  summarizeConversation,
+  selectFromScript,
+  buildAgentAssistPayloadFromScript,
+} from "../services/openaiService.js";
+import { agentAssistScript } from "../config/agent-assist-script.js";
+import {
+  getUserMessagesSinceLastBeforeEscalation,
+  getMessages,
+  getLastConsecutiveUserMessages,
+  getRecentMessages,
+  hasEscalation,
+} from "../storage/messageStorage.js";
+import {
+  getAgentAssistAnalysis,
   saveAgentAssistAnalysis,
-  cleanupGotchaReferences
-} from '../storage/agentAssistStorage.js';
-import { sendAgentAssistData } from '../services/websocketServer.js';
+  cleanupGotchaReferences,
+} from "../storage/agentAssistStorage.js";
+import { sendAgentAssistData } from "../services/websocketServer.js";
 
 const router = express.Router();
 
@@ -19,14 +26,14 @@ const router = express.Router();
  * Get all data needed for agent assist widget (CRM, user info, messages, etc.)
  * Query: conversation_id
  */
-router.get('/conversation-data', (req, res) => {
+router.get("/conversation-data", (req, res) => {
   try {
     const { conversation_id } = req.query;
 
     if (!conversation_id) {
       return res.status(400).json({
-        status: 'error',
-        message: 'conversation_id is required'
+        status: "error",
+        message: "conversation_id is required",
       });
     }
 
@@ -35,33 +42,35 @@ router.get('/conversation-data', (req, res) => {
 
     if (messages.length === 0) {
       return res.status(404).json({
-        status: 'error',
-        message: 'Conversation not found'
+        status: "error",
+        message: "Conversation not found",
       });
     }
 
     // Extract client info from messages
-    const clientMessage = messages.find(msg => msg.client_name) || messages[0];
-    const phoneMessage = messages.find(msg => msg.phone_number) || messages[0];
-    
-    const clientName = clientMessage?.client_name || 'Cliente';
+    const clientMessage =
+      messages.find((msg) => msg.client_name) || messages[0];
+    const phoneMessage =
+      messages.find((msg) => msg.phone_number) || messages[0];
+
+    const clientName = clientMessage?.client_name || "Cliente";
     const phoneNumber = phoneMessage?.phone_number || null;
 
     // Build CRM data with mock data (can be customized per conversation)
     const crmData = [
-      { key: 'Pontos Fidelidade', value: '15.230' },
-      { key: 'Meta Mensal', value: 'R$ 5.000,00' },
-      { key: 'Vendas Mês Atual', value: 'R$ 3.420,50' },
-      { key: 'Percentual Atingido', value: '68,41%' },
-      { key: 'Comissão Percentual', value: '25,0%' },
-      { key: 'Comissão Total', value: 'R$ 855,13' },
-      { key: 'Último Pedido', value: '22/01/2026' }
+      { key: "Pontos Fidelidade", value: "15.230" },
+      { key: "Meta Mensal", value: "R$ 5.000,00" },
+      { key: "Vendas Mês Atual", value: "R$ 3.420,50" },
+      { key: "Percentual Atingido", value: "68,41%" },
+      { key: "Comissão Percentual", value: "25,0%" },
+      { key: "Comissão Total", value: "R$ 855,13" },
+      { key: "Último Pedido", value: "22/01/2026" },
     ];
 
     // Build session info
     const sessionInfo = {
       call_id: normalizedConversationId,
-      ani: phoneNumber || '+5511999999999'
+      ani: phoneNumber || "+5511999999999",
     };
 
     // Build user info
@@ -70,20 +79,25 @@ router.get('/conversation-data', (req, res) => {
       user_id: messages[0]?.user_id || null,
       validAni: !!phoneNumber,
       trustLevel: 0.75,
-      address: 'São Paulo, SP' // Default, can be enhanced
+      address: "São Paulo, SP", // Default, can be enhanced
     };
 
     // Build dialog info from messages
     const dialogInfo = {
       utt_list: messages
-        .filter(msg => msg.flag !== 'ESCALATION')
-        .map(msg => ({
-          leg: msg.flag === 'USER' ? 'USER' : msg.flag === 'AGENT' ? 'AGENT' : 'BOT',
-          utt: msg.text || '',
+        .filter((msg) => msg.flag !== "ESCALATION")
+        .map((msg) => ({
+          leg:
+            msg.flag === "USER"
+              ? "USER"
+              : msg.flag === "AGENT"
+                ? "AGENT"
+                : "BOT",
+          utt: msg.text || "",
           is_final: true,
           confidence: 1.0,
-          words: []
-        }))
+          words: [],
+        })),
     };
 
     // Build features
@@ -93,19 +107,19 @@ router.get('/conversation-data', (req, res) => {
       transcription: true,
       suggestions: true,
       summary: true,
-      notes: true
+      notes: true,
     };
 
     // Build fraud info (default safe)
     const fraudInfo = {
-      description: 'Risco baixo',
-      label: 'SAFE'
+      description: "Risco baixo",
+      label: "SAFE",
     };
 
     // Build notes with fixed mock data
     const notes = [
-      { key: 'Observação 1', value: 'Revendedora Premium' },
-      { key: 'Observação 2', value: 'Atendimento preferencial' }
+      { key: "Observação 1", value: "Revendedora Premium" },
+      { key: "Observação 2", value: "Atendimento preferencial" },
     ];
 
     const responseData = {
@@ -116,7 +130,7 @@ router.get('/conversation-data', (req, res) => {
       features: features,
       fraud_info: fraudInfo,
       notes: notes,
-      has_escalation: hasEscalation(normalizedConversationId)
+      has_escalation: hasEscalation(normalizedConversationId),
     };
 
     // Send to WebSocket clients connected with this conversation_id
@@ -127,19 +141,19 @@ router.get('/conversation-data', (req, res) => {
       dialog_info: dialogInfo,
       features: features,
       fraud_info: fraudInfo,
-      notes: notes
+      notes: notes,
     });
 
     res.json({
-      status: 'success',
-      data: responseData
+      status: "success",
+      data: responseData,
     });
   } catch (error) {
-    console.error('Error getting conversation data:', error);
+    console.error("Error getting conversation data:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to get conversation data',
-      error: error.message
+      status: "error",
+      message: "Failed to get conversation data",
+      error: error.message,
     });
   }
 });
@@ -148,246 +162,214 @@ router.get('/conversation-data', (req, res) => {
  * POST /api/agent-assist/analyze-escalation
  * Analyzes user messages since last message before escalation
  * Body: { conversation_id: string, previous_analysis?: string, force_refresh?: boolean }
- * 
+ *
  * If force_refresh is false or not provided, returns cached escalation analysis from database.
  * If force_refresh is true, generates new analysis asynchronously and updates via WebSocket.
  */
-router.post('/analyze-escalation', async (req, res) => {
+router.post("/analyze-escalation", async (req, res) => {
   try {
-    const { conversation_id, previous_analysis, force_refresh = false } = req.body;
+    const {
+      conversation_id,
+      previous_analysis,
+      force_refresh = false,
+    } = req.body;
 
     if (!conversation_id) {
       return res.status(400).json({
-        status: 'error',
-        message: 'conversation_id is required'
+        status: "error",
+        message: "conversation_id is required",
       });
     }
 
     // Normalize conversation_id
     const normalizedConversationId = conversation_id.trim();
 
-    // Check if conversation has escalation
     if (!hasEscalation(normalizedConversationId)) {
       return res.status(400).json({
-        status: 'error',
-        message: 'Conversation does not have an escalation message'
+        status: "error",
+        message: "Conversation does not have an escalation message",
       });
     }
 
-    // Try to get cached escalation analysis from database first (unless force_refresh)
-    if (!force_refresh) {
-      const cachedAnalysis = getAgentAssistAnalysis(normalizedConversationId);
-      if (cachedAnalysis && (cachedAnalysis.escalationReasoning || cachedAnalysis.escalationAction)) {
-        console.log(`[AgentAssist] Returning cached escalation analysis for conversation ${normalizedConversationId}`);
-        
-        // Send cached data via WebSocket immediately
-        sendAgentAssistData(normalizedConversationId, {
-          reasoning: cachedAnalysis.escalationReasoning,
-          action: cachedAnalysis.escalationAction
-        });
-
-        return res.json({
-          status: 'success',
-          data: {
-            reasoning: cachedAnalysis.escalationReasoning,
-            action: cachedAnalysis.escalationAction,
-            cached: true,
-            updated_at: cachedAnalysis.updated_at
-          }
-        });
-      }
-    }
-
-    // Get user messages since last before escalation
-    const userMessages = getUserMessagesSinceLastBeforeEscalation(normalizedConversationId);
+    // Always call LLM (no cache)
+    const userMessages = getUserMessagesSinceLastBeforeEscalation(
+      normalizedConversationId,
+    );
 
     // Return immediately and process asynchronously
     res.json({
-      status: 'processing',
-      message: 'Escalation analysis is being generated. Updates will be sent via WebSocket.',
+      status: "processing",
+      message:
+        "Escalation analysis is being generated. Updates will be sent via WebSocket.",
       data: {
         conversation_id: normalizedConversationId,
-        user_messages_count: userMessages.length
-      }
+        user_messages_count: userMessages.length,
+      },
     });
 
-    // Process analysis asynchronously (non-blocking)
     (async () => {
       try {
-        // Send processing status via WebSocket
         sendAgentAssistData(normalizedConversationId, {
-          escalationStatus: 'processing',
-          message: 'Analisando escalação...'
+          escalationStatus: "processing",
+          message: "Analisando escalação...",
         });
 
-        // Use mock data if no user messages found
-        let analysis;
-        if (userMessages.length === 0) {
-          console.warn(`[AgentAssist] No user messages found for conversation ${conversation_id}, using mock data`);
-          analysis = {
-            reasoning: 'A conversa foi escalada para atendimento humano. Não foram encontradas mensagens específicas do usuário antes da escalação para análise detalhada. O cliente provavelmente precisa de assistência personalizada que o bot não conseguiu fornecer.',
-            action: 'Revise o histórico completo da conversa, identifique o ponto de insatisfação e ofereça uma solução direta e personalizada.'
-          };
-        } else {
-          // Call OpenAI to analyze (will use mock if API key not set)
-          analysis = await analyzeEscalation(userMessages, previous_analysis || null);
-        }
+        const lastUserMessages = getLastConsecutiveUserMessages(
+          normalizedConversationId,
+        );
+        const recentMessages = getRecentMessages(normalizedConversationId, 5);
+        const { suggestionIndex, sentimentIndex, is_despedida } =
+          await selectFromScript(
+            agentAssistScript,
+            lastUserMessages,
+            recentMessages,
+          );
+        const analysis = buildAgentAssistPayloadFromScript(
+          agentAssistScript,
+          suggestionIndex,
+          sentimentIndex,
+          is_despedida,
+        );
 
-        // Get existing analysis or create new
-        const existingAnalysis = getAgentAssistAnalysis(normalizedConversationId) || {};
-        
-        // Save to database (update escalation fields, keep other fields)
+        const existingAnalysis =
+          getAgentAssistAnalysis(normalizedConversationId) || {};
         saveAgentAssistAnalysis(normalizedConversationId, {
-          userSentiment: existingAnalysis.userSentiment,
-          reasoning: existingAnalysis.reasoning,
-          suggestion: existingAnalysis.suggestion,
-          summary: existingAnalysis.summary,
-          escalationReasoning: analysis.reasoning,
-          escalationAction: analysis.action
-        });
-
-        console.log(`[AgentAssist] Escalation analysis saved to database for conversation ${normalizedConversationId}`);
-
-        // Send complete analysis via WebSocket
-        sendAgentAssistData(normalizedConversationId, {
+          userSentiment: analysis.userSentiment,
           reasoning: analysis.reasoning,
-          action: analysis.action,
-          escalationStatus: 'completed'
+          suggestion: analysis.suggestion,
+          summary: existingAnalysis.summary ?? analysis.summary,
+          escalationReasoning: analysis.reasoning,
+          escalationAction: analysis.suggestion,
         });
+
+        const wsPayload = {
+          reasoning: analysis.reasoning,
+          suggestion: analysis.suggestion,
+          userSentiment: analysis.userSentiment,
+          escalationStatus: "completed",
+        };
+        if (analysis.summary) wsPayload.summary = analysis.summary;
+        sendAgentAssistData(normalizedConversationId, wsPayload);
       } catch (error) {
-        console.error('[AgentAssist] Error processing escalation analysis asynchronously:', error);
+        console.error(
+          "[AgentAssist] Error processing escalation analysis asynchronously:",
+          error,
+        );
         sendAgentAssistData(normalizedConversationId, {
-          escalationStatus: 'error',
-          message: 'Erro ao analisar escalação. Tente novamente.'
+          escalationStatus: "error",
+          message: "Erro ao analisar escalação. Tente novamente.",
         });
       }
     })();
-
   } catch (error) {
-    console.error('Error analyzing escalation:', error);
+    console.error("Error analyzing escalation:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to analyze escalation',
-      error: error.message
+      status: "error",
+      message: "Failed to analyze escalation",
+      error: error.message,
     });
   }
 });
 
 /**
  * POST /api/agent-assist/update-analysis
- * Analyzes the complete conversation and updates agent assist data
- * Body: { conversation_id: string, force_refresh?: boolean }
- * 
- * If force_refresh is false or not provided, returns cached analysis from database.
- * If force_refresh is true, generates new analysis asynchronously and updates via WebSocket.
+ * Always calls LLM (selectFromScript) and sends result via WebSocket. No cache.
+ * Body: { conversation_id: string }
  */
-router.post('/update-analysis', async (req, res) => {
+router.post("/update-analysis", async (req, res) => {
   try {
     const { conversation_id, force_refresh = false } = req.body;
 
     if (!conversation_id) {
       return res.status(400).json({
-        status: 'error',
-        message: 'conversation_id is required'
+        status: "error",
+        message: "conversation_id is required",
       });
     }
 
-    // Normalize conversation_id
     const normalizedConversationId = conversation_id.trim();
 
-    // Try to get cached analysis from database first (unless force_refresh)
-    if (!force_refresh) {
-      const cachedAnalysis = getAgentAssistAnalysis(normalizedConversationId);
-      if (cachedAnalysis && (cachedAnalysis.reasoning || cachedAnalysis.summary)) {
-        console.log(`[AgentAssist] Returning cached analysis for conversation ${normalizedConversationId}`);
-        
-        // Send cached data via WebSocket immediately
-        sendAgentAssistData(normalizedConversationId, {
-          userSentiment: cachedAnalysis.userSentiment,
-          reasoning: cachedAnalysis.reasoning,
-          suggestion: cachedAnalysis.suggestion,
-          summary: cachedAnalysis.summary
-        });
-
-        return res.json({
-          status: 'success',
-          data: {
-            userSentiment: cachedAnalysis.userSentiment,
-            reasoning: cachedAnalysis.reasoning,
-            suggestion: cachedAnalysis.suggestion,
-            summary: cachedAnalysis.summary,
-            cached: true,
-            updated_at: cachedAnalysis.updated_at
-          }
-        });
-      }
-    }
-
-    // Get all messages from conversation
+    // Always call LLM (no cache)
     const allMessages = getMessages(normalizedConversationId);
 
     if (allMessages.length === 0) {
       return res.status(404).json({
-        status: 'error',
-        message: 'No messages found for this conversation'
+        status: "error",
+        message: "No messages found for this conversation",
       });
     }
 
     // Return immediately and process asynchronously
     res.json({
-      status: 'processing',
-      message: 'Analysis is being generated. Updates will be sent via WebSocket.',
+      status: "processing",
+      message:
+        "Analysis is being generated. Updates will be sent via WebSocket.",
       data: {
         conversation_id: normalizedConversationId,
-        total_messages: allMessages.length
-      }
+        total_messages: allMessages.length,
+      },
     });
 
-    // Process analysis asynchronously (non-blocking)
     (async () => {
       try {
-        // Send processing status via WebSocket
         sendAgentAssistData(normalizedConversationId, {
-          analysisStatus: 'processing',
-          message: 'Gerando análise...'
+          analysisStatus: "processing",
+          message: "Gerando análise...",
         });
 
-        // Call OpenAI to analyze (will use mock if API key not set)
-        const analysis = await analyzeConversationForAgentAssist(allMessages);
+        const lastUserMessages = getLastConsecutiveUserMessages(
+          normalizedConversationId,
+        );
+        const recentMessages = getRecentMessages(normalizedConversationId, 5);
+        const { suggestionIndex, sentimentIndex, is_despedida } =
+          await selectFromScript(
+            agentAssistScript,
+            lastUserMessages,
+            recentMessages,
+          );
+        const analysis = buildAgentAssistPayloadFromScript(
+          agentAssistScript,
+          suggestionIndex,
+          sentimentIndex,
+          is_despedida,
+        );
 
-        // Save to database
         saveAgentAssistAnalysis(normalizedConversationId, {
           userSentiment: analysis.userSentiment,
           reasoning: analysis.reasoning,
           suggestion: analysis.suggestion,
-          summary: analysis.summary
+          summary: analysis.summary,
         });
 
-        console.log(`[AgentAssist] Analysis saved to database for conversation ${normalizedConversationId}`);
+        console.log(
+          `[AgentAssist] Analysis saved to database for conversation ${normalizedConversationId}`,
+        );
 
-        // Send complete analysis via WebSocket
-        sendAgentAssistData(normalizedConversationId, {
+        const wsPayload = {
           userSentiment: analysis.userSentiment,
           reasoning: analysis.reasoning,
           suggestion: analysis.suggestion,
-          summary: analysis.summary,
-          analysisStatus: 'completed'
-        });
+          analysisStatus: "completed",
+        };
+        if (analysis.summary) wsPayload.summary = analysis.summary;
+        sendAgentAssistData(normalizedConversationId, wsPayload);
       } catch (error) {
-        console.error('[AgentAssist] Error processing analysis asynchronously:', error);
+        console.error(
+          "[AgentAssist] Error processing analysis asynchronously:",
+          error,
+        );
         sendAgentAssistData(normalizedConversationId, {
-          analysisStatus: 'error',
-          message: 'Erro ao gerar análise. Tente novamente.'
+          analysisStatus: "error",
+          message: "Erro ao gerar análise. Tente novamente.",
         });
       }
     })();
-
   } catch (error) {
-    console.error('Error updating agent assist analysis:', error);
+    console.error("Error updating agent assist analysis:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to update agent assist analysis',
-      error: error.message
+      status: "error",
+      message: "Failed to update agent assist analysis",
+      error: error.message,
     });
   }
 });
@@ -396,18 +378,18 @@ router.post('/update-analysis', async (req, res) => {
  * POST /api/agent-assist/summarize-conversation
  * Summarizes the complete conversation
  * Body: { conversation_id: string, force_refresh?: boolean }
- * 
+ *
  * If force_refresh is false or not provided, returns cached summary from database.
  * If force_refresh is true, generates new summary asynchronously and updates via WebSocket.
  */
-router.post('/summarize-conversation', async (req, res) => {
+router.post("/summarize-conversation", async (req, res) => {
   try {
     const { conversation_id, force_refresh = false } = req.body;
 
     if (!conversation_id) {
       return res.status(400).json({
-        status: 'error',
-        message: 'conversation_id is required'
+        status: "error",
+        message: "conversation_id is required",
       });
     }
 
@@ -418,20 +400,22 @@ router.post('/summarize-conversation', async (req, res) => {
     if (!force_refresh) {
       const cachedAnalysis = getAgentAssistAnalysis(normalizedConversationId);
       if (cachedAnalysis && cachedAnalysis.summary) {
-        console.log(`[AgentAssist] Returning cached summary for conversation ${normalizedConversationId}`);
-        
+        console.log(
+          `[AgentAssist] Returning cached summary for conversation ${normalizedConversationId}`,
+        );
+
         // Send cached summary via WebSocket immediately
         sendAgentAssistData(normalizedConversationId, {
-          summary: cachedAnalysis.summary
+          summary: cachedAnalysis.summary,
         });
 
         return res.json({
-          status: 'success',
+          status: "success",
           data: {
             summary: cachedAnalysis.summary,
             cached: true,
-            updated_at: cachedAnalysis.updated_at
-          }
+            updated_at: cachedAnalysis.updated_at,
+          },
         });
       }
     }
@@ -441,19 +425,20 @@ router.post('/summarize-conversation', async (req, res) => {
 
     if (allMessages.length === 0) {
       return res.status(404).json({
-        status: 'error',
-        message: 'No messages found for this conversation'
+        status: "error",
+        message: "No messages found for this conversation",
       });
     }
 
     // Return immediately and process asynchronously
     res.json({
-      status: 'processing',
-      message: 'Summary is being generated. Updates will be sent via WebSocket.',
+      status: "processing",
+      message:
+        "Summary is being generated. Updates will be sent via WebSocket.",
       data: {
         conversation_id: normalizedConversationId,
-        total_messages: allMessages.length
-      }
+        total_messages: allMessages.length,
+      },
     });
 
     // Process summary asynchronously (non-blocking)
@@ -461,46 +446,51 @@ router.post('/summarize-conversation', async (req, res) => {
       try {
         // Send processing status via WebSocket
         sendAgentAssistData(normalizedConversationId, {
-          summaryStatus: 'processing',
-          message: 'Gerando resumo...'
+          summaryStatus: "processing",
+          message: "Gerando resumo...",
         });
 
         // Call OpenAI to summarize (will use mock if API key not set)
         const summary = await summarizeConversation(allMessages);
 
         // Get existing analysis or create new
-        const existingAnalysis = getAgentAssistAnalysis(normalizedConversationId) || {};
-        
+        const existingAnalysis =
+          getAgentAssistAnalysis(normalizedConversationId) || {};
+
         // Save to database (update summary, keep other fields)
         saveAgentAssistAnalysis(normalizedConversationId, {
           userSentiment: existingAnalysis.userSentiment,
           reasoning: existingAnalysis.reasoning,
           suggestion: existingAnalysis.suggestion,
-          summary: summary
+          summary: summary,
         });
 
-        console.log(`[AgentAssist] Summary saved to database for conversation ${normalizedConversationId}`);
+        console.log(
+          `[AgentAssist] Summary saved to database for conversation ${normalizedConversationId}`,
+        );
 
         // Send complete summary via WebSocket
         sendAgentAssistData(normalizedConversationId, {
           summary: summary,
-          summaryStatus: 'completed'
+          summaryStatus: "completed",
         });
       } catch (error) {
-        console.error('[AgentAssist] Error processing summary asynchronously:', error);
+        console.error(
+          "[AgentAssist] Error processing summary asynchronously:",
+          error,
+        );
         sendAgentAssistData(normalizedConversationId, {
-          summaryStatus: 'error',
-          message: 'Erro ao gerar resumo. Tente novamente.'
+          summaryStatus: "error",
+          message: "Erro ao gerar resumo. Tente novamente.",
         });
       }
     })();
-
   } catch (error) {
-    console.error('Error summarizing conversation:', error);
+    console.error("Error summarizing conversation:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to summarize conversation',
-      error: error.message
+      status: "error",
+      message: "Failed to summarize conversation",
+      error: error.message,
     });
   }
 });
@@ -510,20 +500,20 @@ router.post('/summarize-conversation', async (req, res) => {
  * Clean up old "gotcha" references from cached analysis data
  * This is a one-time migration endpoint
  */
-router.post('/cleanup-gotcha', (req, res) => {
+router.post("/cleanup-gotcha", (req, res) => {
   try {
     const result = cleanupGotchaReferences();
     res.json({
-      status: 'success',
-      message: 'Gotcha references cleaned up',
-      data: result
+      status: "success",
+      message: "Gotcha references cleaned up",
+      data: result,
     });
   } catch (error) {
-    console.error('Error cleaning up gotcha references:', error);
+    console.error("Error cleaning up gotcha references:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Failed to cleanup gotcha references',
-      error: error.message
+      status: "error",
+      message: "Failed to cleanup gotcha references",
+      error: error.message,
     });
   }
 });
