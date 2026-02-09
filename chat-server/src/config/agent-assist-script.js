@@ -26,6 +26,38 @@ export const agentAssistScript = {
       suggestion:
         "Guie o cliente a atualizar o aplicativo, caso não carregue, oriente a aguardar 5 minutos e tentar novamente.",
     },
+    {
+      id: "confirmar-resolucao-cliente-satisfeito",
+      title: "Confirmar resolução e encerrar com cliente satisfeito",
+      reasoning:
+        "O cliente demonstrou satisfação com a resolução (ex.: limite liberado, pedido finalizado). É o momento de confirmar que a alteração já aparece no sistema, agradecer e deixar a porta aberta para mais alguma dúvida.",
+      suggestion:
+        "Nossa, perfeito. Já atualizei aqui e já apareceu o limite liberado. Muito obrigado, me ajudou muito.",
+    },
+    {
+      id: "confirmar-resolucao-cliente-satisfeito-v2",
+      title: "Confirmar resolução e encerrar com cliente satisfeito (variação)",
+      reasoning:
+        "O cliente demonstrou satisfação com a resolução. Confirme que está tudo certo no sistema e agradeça de forma cordial.",
+      suggestion:
+        "Pronto, já está tudo atualizado aqui do nosso lado. Fico muito feliz em ter ajudado. Se precisar de mais alguma coisa, é só chamar.",
+    },
+    {
+      id: "confirmar-resolucao-cliente-satisfeito-v3",
+      title: "Confirmar resolução e encerrar com cliente satisfeito (variação)",
+      reasoning:
+        "O cliente agradeceu e está satisfeito. Reforce que a alteração foi concluída e ofereça ajuda adicional.",
+      suggestion:
+        "Que bom que deu certo! Já liberei aqui e deve aparecer aí em instantes. Obrigada pelo contato, qualquer coisa estou à disposição.",
+    },
+    {
+      id: "confirmar-resolucao-cliente-satisfeito-v4",
+      title: "Confirmar resolução e encerrar com cliente satisfeito (variação)",
+      reasoning:
+        "O cliente está satisfeito com o atendimento. Encerre confirmando a resolução e deixando canal aberto.",
+      suggestion:
+        "Perfeito! Já está tudo certo no sistema. Muito obrigada por entrar em contato, foi um prazer ajudar. Precisa de mais alguma coisa?",
+    },
   ],
 
   sentimentos: [
